@@ -48,6 +48,21 @@ You can copy a world from a computer into its `saves/` folder.
 In menus a finger is the mouse pointer and a tap is a click. The buttons are controller buttons,
 so the controller settings rebind them.
 
+A text field (chat, server address, sign) opens the phone's keyboard. NativeActivity passes
+Latin letters, digits and symbols; other alphabets may not type. Back is Esc: it closes the screen
+or pauses.
+
+## Play with friends on Java Edition
+
+Horizon speaks the 26.3 protocol, so the phone joins vanilla Java servers and Java players' LAN
+worlds:
+
+- Same Wi-Fi: a friend opens a world to LAN on the PC; it shows in Multiplayer, or add their
+  local address.
+- Over the internet: a server with `online-mode=false`, or a friend's LAN world through a tunnel.
+  Servers with `online-mode=true` need a Microsoft sign-in, which this build does not have.
+- Friends' Java Edition must be 26.3, the version Horizon follows.
+
 To try the touch layout on a desktop, start the game with `HORIZON_TOUCH=1`.
 
 ## Build
@@ -74,7 +89,6 @@ packaging/android/build-apk.sh            # target/android/horizon-android.apk
 
 ## Not done yet
 
-- The soft keyboard for chat and sign text.
 - Microsoft sign-in on the phone (online-mode servers). Single player, LAN and offline servers work
   without it.
 - Discord presence, Play with Friends, the heartbeat and real controllers are left out of the Android build.

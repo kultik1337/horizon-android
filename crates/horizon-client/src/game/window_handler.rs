@@ -22,6 +22,14 @@ impl Game<'_> {
             return;
         }
         follow_keymap(&mut event);
+        // Android's Back button is Esc: it closes the open screen or pauses, as on a keyboard.
+        #[cfg(target_os = "android")]
+        if let WindowEvent::KeyboardInput { event, .. } = &mut event
+            && event.logical_key == winit::keyboard::Key::Named(winit::keyboard::NamedKey::BrowserBack)
+        {
+            event.logical_key = winit::keyboard::Key::Named(winit::keyboard::NamedKey::Escape);
+            event.physical_key = PhysicalKey::Code(KeyCode::Escape);
+        }
         // MacosUtil.setCtrlClickEmulatesRightClick: Control + left click is a right click.
         if let WindowEvent::MouseInput { state, button, .. } = &mut event
             && *button == MouseButton::Left
