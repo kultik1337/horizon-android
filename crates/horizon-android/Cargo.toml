@@ -1,0 +1,22 @@
+[package]
+name = "horizon-android"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Horizon on Android: the NativeActivity entry point around the game"
+publish = false
+
+[lib]
+name = "horizon_android"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[target.'cfg(target_os = "android")'.dependencies]
+# No Discord, Play with Friends, heartbeat or controllers (hidapi has no Android build); sound stays.
+horizon-client = { path = "../horizon-client", default-features = false, features = ["audio"] }
+horizon-client-input = { path = "../horizon-client-input" }
+horizon-threads = { path = "../horizon-threads" }
+horizon-mods = { path = "../horizon-mods", default-features = false, features = ["index"] }
+android_logger = "0.15"
+log = "0.4"

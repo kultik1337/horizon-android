@@ -1,0 +1,49 @@
+# Builds the Android APK (arm64) on every push and attaches it to the run's artifacts.
+# A tag `android-v*` also publishes it as a release.
+name: android
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["android-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Rust for Android
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add aarch64-linux-android
+          cargo install cargo-ndk --locked
+      - name: Android SDK packages
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: android-arm64
+      - name: Build the APK
+        run: packaging/android/build-apk.sh --profile fast
+      - uses: actions/upload-artifact@v4
+        with:
+          name: horizon-android-apk
+          path: target/android/horizon-android.apk
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/android-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/android/horizon-android.apk

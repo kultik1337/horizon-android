@@ -1,0 +1,30 @@
+[package]
+name = "horizon-client-input"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "The client's input layer: key bindings and their names, mouse, controllers, clipboard and window options"
+
+[dependencies]
+horizon-client-core = { path = "../horizon-client-core" }
+winit = "0.30.13"
+# The window icon.
+horizon-theme = { path = "../horizon-theme" }
+png = "0.18"
+# The DualSense's trigger effects (the `controllers` feature).
+horizon-dualsense = { path = "../horizon-dualsense", optional = true }
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+# arboard has no Android backend: the game keeps its own copies there (`clipboard.rs`).
+arboard = { version = "3.6.1", default-features = false, features = ["wayland-data-control"] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+# winit's Android backend (NativeActivity): the `horizon-android` app.
+winit = { version = "0.30.13", features = ["android-native-activity"] }
+
+[features]
+controllers = ["dep:horizon-dualsense"]
+
+[lints]
+workspace = true
